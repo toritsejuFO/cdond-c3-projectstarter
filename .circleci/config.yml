@@ -65,24 +65,24 @@ jobs:
     <<: *node_img
     steps:
       - checkout
-      - restore_cache:
-          key: frontend-node-modules
       - run:
           name: Scan Frontend Dependencies
           command: |
             cd frontend
+            npm install
+            npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
 
   scan_backend:
     <<: *node_img
     steps:
       - checkout
-      - restore_cache:
-          key: backend-node-modules
       - run:
           name: Scan Backend Dependencies
           command: |
             cd backend
+            npm install
+            npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
 
 workflows:
