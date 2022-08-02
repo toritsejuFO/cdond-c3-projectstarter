@@ -71,7 +71,7 @@ jobs:
           name: Scan Frontend Dependencies
           command: |
             cd frontend
-            npm run audit --audit-level=critical
+            npm audit --audit-level=critical
 
   scan_backend:
     <<: *node_img
@@ -83,7 +83,7 @@ jobs:
           name: Scan Backend Dependencies
           command: |
             cd backend
-            npm run audit --audit-level=critical
+            npm audit --audit-level=critical
 
 workflows:
   default:
