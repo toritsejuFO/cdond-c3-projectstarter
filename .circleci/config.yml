@@ -35,8 +35,40 @@ jobs:
           paths: [backend/node_modules]
           key: backend-node-modules
 
+  test_frontend:
+    docker:
+      - image: cimg/node:13.8
+    steps:
+      - checkout
+      - restore_cache:
+          key: frontend-node-modules
+      - run:
+          name: Run Frontend Test
+          command: |
+            cd frontend
+            npm install
+            npm run test
+
+  test_backend:
+    docker:
+      - image: cimg/node:13.8
+    steps:
+      - checkout
+      - restore_cache:
+          key: backend-node-modules
+      - run:
+          name: Run Backend Test
+          command: |
+            cd backend
+            npm install
+            npm run test
+
 workflows:
   default:
     jobs:
       - build_frontend
       - build_backend
+      - test_frontend:
+          requires: [build_frontend]
+      - test_backend:
+          requires: [build_backend]
