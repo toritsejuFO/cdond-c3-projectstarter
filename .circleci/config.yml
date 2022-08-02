@@ -1,9 +1,12 @@
 version: 2.1
 
+node_img: &node_img
+  docker:
+      - image: cimg/node:13.8
+
 jobs:
   build_frontend:
-    docker:
-      - image: cimg/node:13.8
+    <<: *node_img
     steps:
       - checkout
       - restore_cache:
@@ -19,8 +22,7 @@ jobs:
           key: frontend-node-modules
 
   build_backend:
-    docker:
-      - image: cimg/node:13.8
+    <<: *node_img
     steps:
       - checkout
       - restore_cache:
@@ -36,8 +38,7 @@ jobs:
           key: backend-node-modules
 
   test_frontend:
-    docker:
-      - image: cimg/node:13.8
+    <<: *node_img
     steps:
       - checkout
       - restore_cache:
@@ -46,12 +47,10 @@ jobs:
           name: Run Frontend Test
           command: |
             cd frontend
-            npm install
             npm run test
 
   test_backend:
-    docker:
-      - image: cimg/node:13.8
+    <<: *node_img
     steps:
       - checkout
       - restore_cache:
@@ -60,8 +59,31 @@ jobs:
           name: Run Backend Test
           command: |
             cd backend
-            npm install
             npm run test
+
+  scan_frontend:
+    <<: *node_img
+    steps:
+      - checkout
+      - restore_cache:
+          key: frontend-node-modules
+      - run:
+          name: Scan Frontend Dependencies
+          command: |
+            cd frontend
+            npm run audit --audit-level=critical
+
+  scan_backend:
+    <<: *node_img
+    steps:
+      - checkout
+      - restore_cache:
+          key: backend-node-modules
+      - run:
+          name: Scan Backend Dependencies
+          command: |
+            cd backend
+            npm run audit --audit-level=critical
 
 workflows:
   default:
@@ -71,4 +93,8 @@ workflows:
       - test_frontend:
           requires: [build_frontend]
       - test_backend:
+          requires: [build_backend]
+      - scan_frontend:
+          requires: [build_frontend]
+      - scan_backend:
           requires: [build_backend]
