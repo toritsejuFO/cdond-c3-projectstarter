@@ -112,8 +112,8 @@ jobs:
             pid=${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --stack-name udapeople-backend-${pid}
-              --parameter-overrides ID=${pid}
+              --stack-name udapeople-backend-${pid} \
+              --parameter-overrides ID=${pid} \
               --tags project=udapeople
       - run:
           name: Deploy frontend cloud infrastructure
@@ -121,8 +121,8 @@ jobs:
             pid=${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              --stack-name udapeople-frontend-${pid}
-              --parameter-overrides ID=${pid}
+              --stack-name udapeople-frontend-${pid} \
+              --parameter-overrides ID=${pid} \
               --tags project=udapeople
       - run:
           name: Fetch and store hostname in ansible invetory file
