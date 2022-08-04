@@ -1,5 +1,15 @@
 version: 2.1
 
+commands:
+  destroy-environment:
+    steps:
+      - run:
+          name: Destroy environment
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+
 node_img: &node_img
   docker:
       - image: cimg/node:13.8
@@ -85,6 +95,46 @@ jobs:
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
 
+  deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Create workspace directory
+          command: mkdir -p /tmp/workspace
+      - run:
+          name: Install image dependencies
+          command: yum install -y tar gzip
+      - run:
+          name: Deploy backend cloud infrastructure
+          command: |
+            pid=${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --stack-name udapeople-backend-${pid}
+              --parameter-overrides ID=${pid}
+              --tags project=udapeople
+      - run:
+          name: Deploy frontend cloud infrastructure
+          command: |
+            pid=${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation deploy \
+              --template-file .circleci/files/frontend.yml \
+              --stack-name udapeople-frontend-${pid}
+              --parameter-overrides ID=${pid}
+              --tags project=udapeople
+      - run:
+          name: Fetch and store hostname in ansible invetory file
+          command: |
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text >> .circleci/ansible/inventory.txt
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths: [.circleci/ansible/inventory.txt]
+      - destroy-environment
+
 workflows:
   default:
     jobs:
@@ -98,3 +148,8 @@ workflows:
           requires: [build_frontend]
       - scan_backend:
           requires: [build_backend]
+      - deploy-infrastructure:
+          requires: [test_backend, test_frontend, scan_backend, scan_frontend]
+          # filters:
+          #   branches:
+          #     only: [test-feature-branch]
