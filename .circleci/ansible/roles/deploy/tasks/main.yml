@@ -1,0 +1,22 @@
+---
+
+- name: Copy artficact to remote host
+  copy:
+    src: artifact.tar.gz
+    dest: ~/
+
+- name: Create backend directory
+  file:
+    path: ~/backend
+    state: directory
+    mode: 0755
+
+- name: Unarchive file
+  remote_src: yes
+  dest: ~/backend
+
+- name: Stop if running
+  shell: pm2 stop default
+
+- name: Start application
+  shell: pm2 start npm -- start

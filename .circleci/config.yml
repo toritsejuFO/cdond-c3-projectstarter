@@ -228,11 +228,35 @@ jobs:
             cd frontend
             npm run build
             tar -cvzf artifact-"${pid}".tar.gz dist
-            aws s3 cp dist s3://udapeople-${pid} --recursive
+            aws s3 sync dist s3://udapeople-${pid} --delete
       - destroy-environment
       - revert-migrations
 
-
+  deploy-backend:
+    <<: *node_img
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ['57:e4:e8:c3:d0:0b:18:b9:75:58:ed:dc:87:fa:18:fe']
+      - run: apk add --update tar gzip
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Install dependencies - awscli
+          command: sudo apt update -y && sudo apt install -y awscli
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
+            npm run build
+            cd ..
+            tar -C backend -czvf artifact.tar.gz .
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      - destroy-environment
+      - revert-migrations
 
 
 workflows:
@@ -257,3 +281,7 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
