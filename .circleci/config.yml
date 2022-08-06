@@ -255,10 +255,10 @@ jobs:
             rm -rf backend/node_modules
             tar -C backend -czvf artifact.tar.gz .
             cp /tmp/workspace/.circleci/ansible/inventory.txt .circleci/ansible/inventory.txt
+            cd .circleci/ansiible
             echo "---- Contents  of the inventory.txt file is -------"
-            cat .circleci/ansible/inventory.txt
-            ANSIBLE_CONFIG=.circleci/ansible/ansible.cfg
-            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment
       - revert-migrations
 

@@ -7,7 +7,7 @@
 
 - name: Unarchive file
   unarchive:
-    src: artifact.tar.gz
+    src: ~/project/artifact.tar.gz
     dest: ~/backend
     remote_src: no
 
