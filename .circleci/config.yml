@@ -7,8 +7,10 @@ commands:
           name: Destroy environment
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
-            aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+            pid=${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name udapeople-backend-${pid}
+            aws s3 rm s3://udapeople-${pid} --recursive
+            aws cloudformation delete-stack --stack-name udapeople-frontend-${pid}
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -179,12 +181,12 @@ jobs:
       - checkout
       - restore_cache:
           key: backend-node-modules
-      - run: apk add --update awscli
+      - run: apt-get install awscli
       - run:
           name: Run migrations
           command: |
             cd backend
-            npm run migrations >> migrations_dump.txt
+            npm run migrations > migrations_dump.txt
       - run:
           name: Send migration results to kvdb.io
           command: |
