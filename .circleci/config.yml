@@ -240,7 +240,10 @@ jobs:
           at: /tmp/workspace
       - run:
           name: Install dependencies - awscli
-          command: sudo apt update -y && sudo apt install -y awscli ansible openssh
+          command: sudo apt update -y && sudo apt install -y awscli
+      - run:
+          name: Install dependencies - ansible
+          command: sudo apt install -y ansible
       - run:
           name: Deploy backend
           command: |
