@@ -168,8 +168,8 @@ workflows:
           requires: [build_backend]
       - deploy-infrastructure:
           requires: [test_backend, test_frontend, scan_backend, scan_frontend]
-          filters:
-            branches:
-              only: [test-feature-branch]
+          # filters:
+          #   branches:
+          #     only: [test-feature-branch]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
