@@ -172,7 +172,7 @@ jobs:
           name: Send migration results to kvdb.io
           command: |
             MIGRATION_KEY=migration_${CIRCLE_WORKFLOW_ID:0:7}
-            if grep -q 'has been executed successfully' migrations_dump.txt
+            if grep -q 'has been executed successfully' backend/migrations_dump.txt
             then
               curl https://KVdb.io/${KVDB_BUCKET}/${MIGRATION_KEY} -d '1'
             else
