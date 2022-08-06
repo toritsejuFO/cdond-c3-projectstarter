@@ -181,12 +181,15 @@ jobs:
       - checkout
       - restore_cache:
           key: backend-node-modules
-      - run: apt-get install awscli
+      - run:
+          name: Install dependencies - awscli
+          command: sudo apt update -y && sudo apt install -y awscli
       - run:
           name: Run migrations
           command: |
             cd backend
             npm run migrations > migrations_dump.txt
+            cat migrations_dump.txt
       - run:
           name: Send migration results to kvdb.io
           command: |
@@ -210,8 +213,7 @@ jobs:
           key: frontend-node-modules
       - run:
           name: Install dependencies - awscli
-          command: |
-            apk add --update awscli
+          command: sudo apt update -y && sudo apt install -y awscli
       - run:
           name: Get backend url
           command: |
