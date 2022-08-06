@@ -12,8 +12,9 @@
     mode: 0755
 
 - name: Unarchive file
-  remote_src: yes
-  dest: ~/backend
+  unarchive:
+    remote_src: yes
+    dest: ~/backend
 
 - name: Install app dependencies
   npm:
