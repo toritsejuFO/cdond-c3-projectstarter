@@ -3,7 +3,8 @@
 - name: Copy artficact to remote host
   copy:
     src: ~/project/artifact.tar.gz
-    dest: ~/
+    dest: ~/artifact.tar.gz
+    backup: true
 
 - name: Create backend directory
   file:
