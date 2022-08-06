@@ -15,6 +15,11 @@
   remote_src: yes
   dest: ~/backend
 
+- name: Install app dependencies
+  npm:
+    path: ~/backend
+    state: present
+
 - name: Stop if running
   shell: pm2 stop default
 

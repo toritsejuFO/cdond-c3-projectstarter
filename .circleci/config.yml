@@ -240,7 +240,7 @@ jobs:
           at: /tmp/workspace
       - run:
           name: Install dependencies - awscli
-          command: sudo apt update -y && sudo apt install -y awscli
+          command: sudo apt update -y && sudo apt install -y awscli ansible openssh
       - run:
           name: Deploy backend
           command: |
@@ -248,9 +248,12 @@ jobs:
             npm install
             npm run build
             cd ..
+            echo "---- Remove node_modules before archiving, to be installed later using ansible -----"
+            rm -rf backend/node_modules
             tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
-            echo "Contents  of the inventory.txt file is -------"
+            cp /tmp/workspace/.circleci/ansible/inventory.txt inventory.txt
+            echo "---- Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment
