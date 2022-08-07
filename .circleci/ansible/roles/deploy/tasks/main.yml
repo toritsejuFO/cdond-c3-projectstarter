@@ -1,6 +1,6 @@
 ---
 - name: Create backend directory
-  ansible.builtin.file:
+  file:
     path: /backend
     state: directory
     mode: '0755'
