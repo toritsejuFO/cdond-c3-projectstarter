@@ -1,15 +1,15 @@
 ---
-- name: Create backend directory
-  file:
-    path: /backend
-    state: directory
+- name: Copy zipped file
+  copy:
+    src: ~/project/artifact.tar.gz
+    dest: ~/artifact.tar.gz
     mode: '0755'
 
 - name: Unarchive file
   unarchive:
-    src: /project/artifact.tar.gz
-    dest: /backend
-    remote_src: no
+    src: ~/artifact.tar.gz
+    dest: ~/backend
+    remote_src: yes
 
 - name: Install app dependencies
   npm:
