@@ -1,25 +1,25 @@
-- name: Create backend folder
+- name: "Create backend folder"
   shell: mkdir /home/ubuntu/backend
 
-- name: Copy zipped file
+- name: "Copy zipped file"
   copy:
     src: ~/artifact.tar.gz
     dest: ~/backend/artifact.tar.gz
-    mode: '0755'
+    mode: '0777'
     remote_src: no
 
-- name: Unarchive file
-  shell: tar -xzvf artifact.tar.gz ~/backend
+- name: "Unarchive file"
+  shell: tar -xzvf artifact.tar.gz -C /home/ubuntu/backend
 
   # unarchive:
   #   src: ~/artifact.tar.gz
   #   dest: ~/backend
   #   remote_src: yes
 
-- name: Install app dependencies
+- name: "Install app dependencies"
   npm:
-    path: ~/backend
+    path: /home/ubuntu/backend
     state: present
 
-- name: Start application
-  shell: cd backend && pm2 start npm -- start
+- name: "Start application"
+  shell: cd /home/ubuntu/backend && pm2 start npm -- start
