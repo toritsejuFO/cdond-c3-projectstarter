@@ -1,6 +1,6 @@
 ---
 - name: Copy zipped file
-  copy:
+  template:
     src: artifact.tar.gz
     dest: ~/
     mode: '0755'
