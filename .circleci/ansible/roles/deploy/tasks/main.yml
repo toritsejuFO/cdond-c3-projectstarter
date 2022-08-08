@@ -1,8 +1,6 @@
 ---
 - name: Create backend folder
-  file:
-    path: ~/backend
-    state: directory
+  command: mkdir ~/backend
 
 - name: Copy zipped file
   copy:
