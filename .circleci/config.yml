@@ -165,7 +165,9 @@ jobs:
             pip3 install --upgrade awscli
       - run:
           name: Configure server
-          command: ansible-playbook -i inventory.txt configure-server.yml
+          command: |
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment
 
   run-migrations:
@@ -253,7 +255,7 @@ jobs:
             echo "----- archive folder -----"
             tar -C backend -czvf artifact.tar.gz .
 
-            echo "---- Contents  of the inventory.txt file is -------"
+            echo "---- Contents of the inventory.txt file -------"
             cd .circleci/ansible
             cat inventory.txt
 
