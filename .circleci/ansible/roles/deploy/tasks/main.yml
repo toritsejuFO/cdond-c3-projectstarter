@@ -1,24 +1,22 @@
 ---
 - name: Copy zipped file
-  template:
+  copy:
     src: artifact.tar.gz
     dest: ~/
     mode: '0755'
     remote_src: no
 
 - name: Unarchive file
-  unarchive:
-    src: ~/artifact.tar.gz
-    dest: ~/backend
-    remote_src: yes
+  command: tar -xzvf artifact.tar.gz backend
+  # unarchive:
+  #   src: ~/artifact.tar.gz
+  #   dest: ~/backend
+  #   remote_src: yes
 
 - name: Install app dependencies
   npm:
     path: ~/backend
     state: present
 
-- name: Stop if running
-  shell: pm2 stop default
-
 - name: Start application
-  shell: pm2 start npm -- start
+  shell: cd backend && pm2 start npm -- start

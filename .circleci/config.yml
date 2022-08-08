@@ -247,21 +247,24 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-            pwd
             cd backend
             npm install
             npm run build
             cd ..
+
             echo "---- Remove node_modules before archiving, to be installed later using ansible -----"
             rm -rf backend/node_modules
             tar -C backend -czvf artifact.tar.gz .
+
             echo "----- Create files directory and copy artifact there -----"
-            mkdir -p roles/deploy/files
             cp ~/project/artifact.tar.gz roles/deploy/files
+
             echo "---- Contents  of the inventory.txt file is -------"
             cd .circleci/ansible
             cp /tmp/workspace/.circleci/ansible/inventory.txt inventory.txt
             cat inventory.txt
+
+            echo "---- Run ansible ----"
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment
       - revert-migrations
