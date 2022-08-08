@@ -257,7 +257,7 @@ jobs:
             tar -C backend -czvf artifact.tar.gz .
             echo "----- Create files directory and copy artifact there -----"
             mkdir -p roles/deploy/files
-            cp ~/artifact.tar.gz roles/deploy/files
+            cp ~/project/artifact.tar.gz roles/deploy/files
             echo "---- Contents  of the inventory.txt file is -------"
             cd .circleci/ansible
             cp /tmp/workspace/.circleci/ansible/inventory.txt inventory.txt
