@@ -1,9 +1,10 @@
 ---
 - name: Copy zipped file
   copy:
-    src: ~/project/artifact.tar.gz
+    src: artifact.tar.gz
     dest: ~/
     mode: '0755'
+    remote_src: no
 
 - name: Unarchive file
   unarchive:

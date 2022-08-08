@@ -266,18 +266,18 @@ jobs:
 workflows:
   default:
     jobs:
-      - build_frontend
-      - build_backend
-      - test_frontend:
-          requires: [build_frontend]
-      - test_backend:
-          requires: [build_backend]
-      - scan_frontend:
-          requires: [build_frontend]
-      - scan_backend:
-          requires: [build_backend]
-      - deploy-infrastructure:
-          requires: [test_backend, test_frontend, scan_backend, scan_frontend]
+      # - build_frontend
+      # - build_backend
+      # - test_frontend:
+      #     requires: [build_frontend]
+      # - test_backend:
+      #     requires: [build_backend]
+      # - scan_frontend:
+      #     requires: [build_frontend]
+      # - scan_backend:
+      #     requires: [build_backend]
+      - deploy-infrastructure
+          # requires: [test_backend, test_frontend, scan_backend, scan_frontend]
           # filters:
           #   branches:
           #     only: [test-feature-branch]
