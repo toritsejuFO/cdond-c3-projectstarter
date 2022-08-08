@@ -2,7 +2,7 @@
 - name: Copy zipped file
   copy:
     src: ~/project/artifact.tar.gz
-    dest: ~/artifact.tar.gz
+    dest: ~/
     mode: '0755'
 
 - name: Unarchive file
