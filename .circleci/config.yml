@@ -254,7 +254,10 @@ jobs:
 
             echo "---- Remove node_modules before archiving, to be installed later using ansible -----"
             rm -rf backend/node_modules
-            tar -C backend -czvf artifact.tar.gz ~
+
+            echo "----- archive folder -----"
+            tar -C backend -czvf artifact.tar.gz .
+            cp artifact.tar.gz ~/
 
             echo "---- Contents  of the inventory.txt file is -------"
             cd .circleci/ansible
@@ -265,7 +268,6 @@ jobs:
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment
       - revert-migrations
-
 
 workflows:
   default:

@@ -1,13 +1,19 @@
 ---
+- name: Create backend folder
+  file:
+    path: ~/backend
+    state: directory
+
 - name: Copy zipped file
   copy:
     src: ~/artifact.tar.gz
-    dest: ~/
+    dest: ~/backend/artifact.tar.gz
     mode: '0755'
     remote_src: no
 
 - name: Unarchive file
-  command: tar -xzvf artifact.tar.gz backend
+  command: tar -xzvf artifact.tar.gz ~/backend
+
   # unarchive:
   #   src: ~/artifact.tar.gz
   #   dest: ~/backend
