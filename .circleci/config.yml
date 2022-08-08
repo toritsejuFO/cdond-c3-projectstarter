@@ -254,10 +254,7 @@ jobs:
 
             echo "---- Remove node_modules before archiving, to be installed later using ansible -----"
             rm -rf backend/node_modules
-            tar -C backend -czvf artifact.tar.gz .
-
-            echo "----- Create files directory and copy artifact there -----"
-            cp ~/project/artifact.tar.gz roles/deploy/files
+            tar -C backend -czvf artifact.tar.gz ~
 
             echo "---- Contents  of the inventory.txt file is -------"
             cd .circleci/ansible
