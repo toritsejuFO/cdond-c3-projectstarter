@@ -1,15 +1,16 @@
+---
 - name: "Create backend folder"
   shell: mkdir /home/ubuntu/backend
 
 - name: "Copy zipped file"
   copy:
-    src: ~/artifact.tar.gz
+    src: ~/project/artifact.tar.gz
     dest: ~/backend/artifact.tar.gz
     mode: '0777'
     remote_src: no
 
 - name: "Unarchive file"
-  shell: tar -xzvf artifact.tar.gz -C /home/ubuntu/backend
+  shell: tar -C /home/ubuntu/backend -xzvf artifact.tar.gz
 
   # unarchive:
   #   src: ~/artifact.tar.gz

@@ -117,9 +117,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Create workspace directory
-          command: mkdir -p /tmp/workspace
-      - run:
           name: Install image dependencies
           command: yum install -y tar gzip
       - run:
@@ -141,14 +138,13 @@ jobs:
               --parameter-overrides ID=${pid} \
               --tags project=udapeople
       - run:
-          name: Fetch and store hostname in ansible invetory file
+          name: Fetch and store hostname in ansible inventory file
           command: |
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> .circleci/ansible/inventory.txt
-            cp -r .circleci /tmp/workspace
       - persist_to_workspace:
-          root: /tmp/workspace
+          root: ~/
           paths: [.circleci]
       - destroy-environment
 
@@ -161,7 +157,7 @@ jobs:
           fingerprints: ['57:e4:e8:c3:d0:0b:18:b9:75:58:ed:dc:87:fa:18:fe']
       - run: apk add --update tar gzip
       - attach_workspace:
-          at: /tmp/workspace
+          at: ~/
       - run:
           name: Install dependencies
           command: |
@@ -169,10 +165,7 @@ jobs:
             pip3 install --upgrade awscli
       - run:
           name: Configure server
-          command: |
-            cd /tmp/workspace/.circleci/ansible
-            ansible-playbook -i inventory.txt configure-server.yml
-          no_output_timeout: 15m
+          command: ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment
 
   run-migrations:
@@ -207,14 +200,14 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /tmp/workspace
+          at: ~/
       - run:
           name: Install dependencies - awscli
           command: sudo apt update -y && sudo apt install -y awscli
       - run:
           name: Get backend url
           command: |
-            BACKEND_IP=$(sed -n 2p /tmp/workspace/.circleci/ansible/inventory.txt)
+            BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
             export API_URL="http://${BACKEND_IP}:3030"
             echo API_URL=\"${API_URL}\" >> frontend/.env
             cat frontend/.env
@@ -237,13 +230,15 @@ jobs:
       - add_ssh_keys:
           fingerprints: ['57:e4:e8:c3:d0:0b:18:b9:75:58:ed:dc:87:fa:18:fe']
       - attach_workspace:
-          at: /tmp/workspace
+          at: ~/
       - run:
           name: Install dependencies - awscli
           command: sudo apt update -y && sudo apt install -y awscli
       - run:
           name: Install dependencies - ansible
-          command: sudo apt update -y && sudo apt install -y ansible
+          command: |
+            python3 --version || python2 --version
+            sudo apt update -y && sudo apt install -y ansible
       - run:
           name: Deploy backend
           command: |
@@ -257,11 +252,9 @@ jobs:
 
             echo "----- archive folder -----"
             tar -C backend -czvf artifact.tar.gz .
-            cp artifact.tar.gz ~/
 
             echo "---- Contents  of the inventory.txt file is -------"
             cd .circleci/ansible
-            cp /tmp/workspace/.circleci/ansible/inventory.txt inventory.txt
             cat inventory.txt
 
             echo "---- Run ansible ----"
