@@ -236,12 +236,12 @@ jobs:
       - run:
           name: Install dependencies - awscli, verify version
           command: |
-            python3 -m pip install awscli
+            pip3 install --upgrade awscli
             aws --version
       - run:
           name: Install dependencies - ansible, verify version
           command: |
-            python3 -m pip install ansible
+            pip3 install --upgrade ansible
             ansible --version
       - run:
           name: Deploy backend
