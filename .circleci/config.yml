@@ -236,7 +236,7 @@ jobs:
           at: ~/
       - run:
           name: Install dependencies - awscli
-          command: apk add --update awscli
+          command: pip3 install --upgrade awscli
       - run:
           name: Install dependencies - node
           command: |
