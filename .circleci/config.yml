@@ -234,12 +234,14 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Install dependencies - awscli
-          command: sudo apt update -y && sudo apt install -y awscli
+          name: Install dependencies - awscli, verify version
+          command: |
+            python3 -m pip install awscli
+            aws --version
       - run:
           name: Install dependencies - ansible, verify version
           command: |
-            sudo apt update -y && sudo apt install -y ansible
+            python3 -m pip install ansible
             ansible --version
       - run:
           name: Deploy backend
