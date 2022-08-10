@@ -237,11 +237,6 @@ jobs:
           name: Install dependencies - awscli
           command: sudo apt update -y && sudo apt install -y awscli
       - run:
-          name: Update python version and verify
-          command: |
-            sudo apt update -y && sudo apt install -y python3
-            python3 --version
-      - run:
           name: Install dependencies - ansible, verify version
           command: |
             sudo apt update -y && sudo apt install -y ansible
