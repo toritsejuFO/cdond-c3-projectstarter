@@ -243,10 +243,9 @@ jobs:
             apk add --update nodejs npm
             node -v
       - run:
-          name: Install dependencies - ansible
+          name: Install dependencies - ansible, openssh
           command: |
-            apk add --update ansible
-            ansible --version
+            apk add --update ansible openssh
       - run:
           name: Deploy backend
           command: |
