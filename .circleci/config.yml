@@ -226,7 +226,8 @@ jobs:
       - revert-migrations
 
   deploy-backend:
-    <<: *node_img
+    docker:
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
@@ -235,14 +236,16 @@ jobs:
           at: ~/
       - run:
           name: Install dependencies - awscli
-          command: sudo apt update -y && sudo apt install -y awscli
+          command: apk add --update awscli
       - run:
-          name: Check python version
-          command: python3 --version
-      - run:
-          name: Install dependencies - ansible, verify version
+          name: Install dependencies - node
           command: |
-            sudo apt update -y && sudo apt install -y ansible
+            apk add --update nodejs npm
+            node -v
+      - run:
+          name: Install dependencies - ansible
+          command: |
+            apk add --update ansible
             ansible --version
       - run:
           name: Deploy backend
