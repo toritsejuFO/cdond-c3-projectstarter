@@ -1,1 +1,2 @@
-1. https://github.com/toritsejuFO/cdond-c3-projectstarter
+1. [URL02] - https://github.com/toritsejuFO/cdond-c3-projectstarter
+2. [URL02] - http://udapeople-3cbf3f7.s3-website-us-east-1.amazonaws.com
