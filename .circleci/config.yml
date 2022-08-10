@@ -222,8 +222,8 @@ jobs:
             npm run build
             tar -cvzf artifact-"${pid}".tar.gz dist
             aws s3 sync dist s3://udapeople-${pid} --delete
-      # - destroy-environment
-      # - revert-migrations
+      - destroy-environment
+      - revert-migrations
 
   deploy-backend:
     <<: *node_img
@@ -234,14 +234,15 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Install dependencies - awscli, verify version
-          command: |
-            pip3 install --upgrade awscli
-            aws --version
+          name: Install dependencies - awscli
+          command: sudo apt update -y && sudo apt install -y awscli
+      - run:
+          name: Check python version
+          command: python3 --version
       - run:
           name: Install dependencies - ansible, verify version
           command: |
-            pip3 install --upgrade ansible
+            sudo apt update -y && sudo apt install -y ansible
             ansible --version
       - run:
           name: Deploy backend
@@ -262,9 +263,9 @@ jobs:
             cat inventory.txt
 
             echo "---- Run ansible ----"
-            ansible-playbook -i inventory.txt deploy-backend.yml
-      # - destroy-environment
-      # - revert-migrations
+            ansible-playbook -e "ansible_python_interpreter=/usr/bin/python3" -i inventory.txt deploy-backend.yml
+      - destroy-environment
+      - revert-migrations
 
 workflows:
   default:
