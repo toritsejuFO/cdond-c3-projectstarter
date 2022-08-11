@@ -271,13 +271,15 @@ jobs:
 
   smoke-test:
     docker:
-      - image: alpine:3
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - run:
+          name: Install packages
+          command: apk add --update curl tar gzip
+      - run:
           name: Install dependencies
-          command: |
-            apk add --update curl tar gzip awscli
+          command: pip3 install --upgrade awscli
       - attach_workspace:
           at: ~/
       - run:
