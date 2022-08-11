@@ -2,24 +2,31 @@ version: 2.1
 
 commands:
   destroy-environment:
+    parameters:
+      workflow_id:
+        type: string
     steps:
       - run:
           name: Destroy environment
           when: on_fail
           command: |
-            pid=${CIRCLE_WORKFLOW_ID:0:7}
+            echo "Destroying environment: << parameters.workflow_id >> "
+            pid=<< parameters.workflow_id >>
             aws cloudformation delete-stack --stack-name udapeople-backend-${pid}
             aws s3 rm s3://udapeople-${pid} --recursive
             aws cloudformation delete-stack --stack-name udapeople-frontend-${pid}
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
+    parameters:
+      workflow_id:
+        type: string
     steps:
       - run:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl https://KVdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7})
+            SUCCESS=$(curl https://KVdb.io/${KVDB_BUCKET}/migration_<< parameters.workflow_id >>)
             if(( $SUCCESS==1 ));
             then
               cd ~/project/backend
@@ -146,7 +153,8 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths: [project/.circleci]
-      - destroy-environment
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   configure-infrastructure:
     docker:
@@ -168,7 +176,8 @@ jobs:
           command: |
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
-      - destroy-environment
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   run-migrations:
     <<: *node_img
@@ -195,7 +204,8 @@ jobs:
             else
               curl https://KVdb.io/${KVDB_BUCKET}/${MIGRATION_KEY} -d '0'
             fi
-      - destroy-environment
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   deploy-frontend:
     <<: *node_img
@@ -203,6 +213,8 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/
+      - restore_cache:
+          key: backend-node-modules
       - run:
           name: Install dependencies - awscli
           command: sudo apt update -y && sudo apt install -y awscli
@@ -222,8 +234,10 @@ jobs:
             npm run build
             tar -cvzf artifact-"${pid}".tar.gz dist
             aws s3 sync dist s3://udapeople-${pid} --delete
-      - destroy-environment
-      - revert-migrations
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   deploy-backend:
     docker:
@@ -234,6 +248,8 @@ jobs:
           fingerprints: ['57:e4:e8:c3:d0:0b:18:b9:75:58:ed:dc:87:fa:18:fe']
       - attach_workspace:
           at: ~/
+      - restore_cache:
+          key: backend-node-modules
       - run:
           name: Install dependencies - awscli
           command: pip3 install --upgrade awscli
@@ -266,8 +282,10 @@ jobs:
 
             echo "---- Run ansible ----"
             ansible-playbook -e "ansible_python_interpreter=/usr/bin/python3" -i inventory.txt deploy-backend.yml
-      - destroy-environment
-      - revert-migrations
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   smoke-test:
     docker:
@@ -282,6 +300,8 @@ jobs:
           command: pip3 install --upgrade awscli
       - attach_workspace:
           at: ~/
+      - restore_cache:
+          key: backend-node-modules
       - run:
           name: Get backend url and perform Backend smoke test
           command: |
@@ -304,8 +324,10 @@ jobs:
             else
               return 1
             fi
-      - destroy-environment
-      - revert-migrations
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
 workflows:
   default:
