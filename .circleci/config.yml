@@ -337,17 +337,13 @@ jobs:
           name: Install packages
           command: yum install -y curl
       - run:
-          name: Get old workflow id
+          name: Get and Save old workflow id
           command: |
             export OldWorkflowID=$(aws cloudformation list-exports \
               --query "Exports[?Name=='WorkflowID'].Value" \
               --no-paginate \
               --output text)
             echo OldWorkflowID: "${OldWorkflowID}"
-            echo 'export OldWorkflowID="${OldWorkflowID}"' >> $BASH_ENV
-      - run:
-          name: Save old workflow id to key-value store
-          command: |
             curl https://KVdb.io/${KVDB_BUCKET}/old-workflow-id -d "${OldWorkflowID}"
 
   cloudfront-update:
@@ -382,21 +378,17 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - run:
-          name: Get old stack workflow id
-          command: |
-            export OldWorkflowID=$(curl https://KVdb.io/${KVDB_BUCKET}/old-workflow-id)
-            echo OldWorkflowID: "${OldWorkflowID}"
-            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
-            echo 'export OldWorkflowID="${OldWorkflowID}"' >> $BASH_ENV
-      - run:
           name: Display existing stacks
           command: |
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             echo Stack names: "${STACKS[@]}"
       - run:
-          name: Remove old stacks and files
+          name: Get old stack workflow id, and Remove old stacks and files
           command: |
+            export OldWorkflowID=$(curl https://KVdb.io/${KVDB_BUCKET}/old-workflow-id)
+            echo OldWorkflowID: "${OldWorkflowID}"
+            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
             if [[ "${CIRCLE_WORKFLOW_ID}" != "${OldWorkflowID}" ]]
             then
               aws s3 rm s3://udapeople-${OldWorkflowID} --recursive
