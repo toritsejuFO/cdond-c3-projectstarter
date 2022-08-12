@@ -348,7 +348,7 @@ jobs:
       - run:
           name: Save old workflow id to key-value store
           command: |
-            curl https://KVdb.io/${KVDB_BUCKET}/old-workflow-id -d '${OldWorkflowID}'
+            curl https://KVdb.io/${KVDB_BUCKET}/old-workflow-id -d "${OldWorkflowID}"
 
   cloudfront-update:
     docker:
