@@ -147,9 +147,11 @@ jobs:
       - run:
           name: Fetch and store hostname in ansible inventory file
           command: |
+            echo "[web]" > .circleci/ansible/inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> .circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths: [project/.circleci]
